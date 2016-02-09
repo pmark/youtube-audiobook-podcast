@@ -25,8 +25,9 @@ function streamify(uri, opt) {
 
     videoReadStream.on('info', function(info, format) {
       // console.log('info event:', format);
+      if (!fs.exists('downloads')) { fs.mkdirSync('downloads'); }
       outputFileName = info.title.trim().toLowerCase().replace(/[\s\W]+/g, '-');
-      outputFileName = outputFileName + '.mp3';
+      outputFileName = 'downloads/' + outputFileName + '.mp3';
 
       fetchVideoSize(format.url)
       .then(function(downloadSize) {    
@@ -52,7 +53,7 @@ function streamify(uri, opt) {
           reject(err);
         });
 
-        new ffmpeg({source: videoReadStream})
+        ffmpeg({source: videoReadStream})
           .toFormat(opt.audioFormat)
           .writeToStream(writeStream);
       });
