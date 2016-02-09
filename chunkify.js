@@ -3,6 +3,7 @@
 var ProgressBar = require('progress');
 var fs = require('fs');
 var ffmpeg = require('fluent-ffmpeg');
+var Promise = require('bluebird');
 
 module.exports = chunkify;
 
@@ -37,21 +38,32 @@ function chunkify(mp3FileName) {
 				reject(err);
 			})
 
-			var SecPerHour = 3600;
-			var chunkCount = Math.ceil(durationSec / SecPerHour);
-			var playhead = 0;
+			var SecPerChunk = 360; //3600;
+			var chunkCount = Math.ceil(durationSec / SecPerChunk);
 			var secondsRemaining = durationSec;
 
+			var tuples = [];
+
 			for (var chunkNum=0; chunkNum < chunkCount; chunkNum++) {
+				var playhead = (chunkNum * SecPerChunk);
+				var chunkDuration;
 
-				playhead = (chunkNum * SecPerHour);
-
-				if (secondsRemaining < SecPerHour) {
+				if (secondsRemaining < SecPerChunk) {
 					chunkDuration = secondsRemaining;
 				}
 				else {
-					chunkDuration = SecPerHour;
+					chunkDuration = SecPerChunk;
 				}
+
+				secondsRemaining = (secondsRemaining - chunkDuration);
+				tuples.push([chunkNum, playhead, chunkDuration, secondsRemaining]);
+			}
+
+			Promise.map(tuples, function(tuple) {
+				var chunkNum = tuple[0];
+				var playhead = tuple[1];
+				var chunkDuration = tuple[2];
+				var secondsRemaining = tuple[3];
 
 				var chunkName = ('downloads/chunk' + 
 					(chunkNum < 9 ? '0' : '') +
@@ -59,21 +71,23 @@ function chunkify(mp3FileName) {
 
 				console.log('chunk', chunkNum+1, 'of', chunkCount, ':', playhead, 'to', playhead+chunkDuration, 'sec');
 
-				var chunkCommand = command.clone()
-				.input(mp3FileName)
-				.audioBitrate(128)
-				.audioChannels(1)
-				.seek(playhead)
-				.duration(chunkDuration)
-				.on('end', function() {
-					secondsRemaining = (secondsRemaining - chunkDuration);
-					if (secondsRemaining <= 0) {
-						console.log('======== done ========');
-						resolve();
-					}
-				})
-				.save(chunkName)
-			}
+				return new Promise(function(resolve, reject) {
+					var chunkCommand = command.clone()
+					.input(mp3FileName)
+					.audioBitrate(128)
+					.audioChannels(1)
+					.seek(playhead)
+					.duration(chunkDuration)
+					.on('end', resolve)
+					.save(chunkName)
+				});
+			}, {
+				concurrency: 2,
+			})
+			.then(function() {
+				console.log('======== done chunkifying ========');
+				resolve();
+			})
 
 		});
 

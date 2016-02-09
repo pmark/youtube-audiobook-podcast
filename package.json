@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.2.2",
     "charm": "^1.0.0",
     "fluent-ffmpeg": "^2.0.1",
     "progress": "^1.1.8",
