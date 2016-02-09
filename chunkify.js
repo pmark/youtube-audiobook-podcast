@@ -4,14 +4,23 @@ var ProgressBar = require('progress');
 var fs = require('fs');
 var ffmpeg = require('fluent-ffmpeg');
 var Promise = require('bluebird');
+var path = require('path');
 
 module.exports = chunkify;
 
 function chunkify(mp3FileName) {
+
+	var outputBaseDir = path.dirname(mp3FileName);
+	var outputDirName = path.basename(mp3FileName, '.mp3');
+	var outputDir = path.join(outputBaseDir, outputDirName);
+	
+	if (!fs.existsSync(outputDir)) {
+		fs.mkdir(outputDir);
+	}
+
 	return new Promise(function(resolve, reject) {
 		console.log('chunkifying:', mp3FileName);
 
-		var bar = null;
 		var durationSec = 0;
 
 		ffmpeg(mp3FileName)
@@ -19,26 +28,7 @@ function chunkify(mp3FileName) {
 			durationSec = data.format.duration;
 			console.log('Total MP3 duration:', durationSec);
 
-			var command = ffmpeg()
-			.input(mp3FileName)
-			.on('progress', function(progress) {
-			    // console.log('Processing: ' + progress.percent + '% done');
-
-			    bar = bar || new ProgressBar('Splitting [:bar] :percent, :elapsed sec, :eta sec remaining', {
-			    	complete: '=',
-			    	incomplete: ' ',
-			    	width: 25,
-			    	total: 100
-			    });
-
-			    bar.tick(progress.percent);
-			})
-			.on('error', function(err, stdout, stderr) {
-				console.log('Cannot process mp3: ' + err.message);
-				reject(err);
-			})
-
-			var SecPerChunk = 360; //3600;
+			var SecPerChunk = 3600;
 			var chunkCount = Math.ceil(durationSec / SecPerChunk);
 			var secondsRemaining = durationSec;
 
@@ -59,33 +49,46 @@ function chunkify(mp3FileName) {
 				tuples.push([chunkNum, playhead, chunkDuration, secondsRemaining]);
 			}
 
+			var bar = new ProgressBar('Splitting [:bar] :percent', {
+				complete: 'o',
+				incomplete: '.',
+				width: 25,
+				total: chunkCount,
+			});
+			bar.tick(0);
+
 			Promise.map(tuples, function(tuple) {
 				var chunkNum = tuple[0];
 				var playhead = tuple[1];
 				var chunkDuration = tuple[2];
 				var secondsRemaining = tuple[3];
 
-				var chunkName = ('downloads/chunk' + 
+				var chunkName = (path.join(outputDir, 'hour' + 
 					(chunkNum < 9 ? '0' : '') +
-					(chunkNum+1) + '.mp3');
-
-				console.log('chunk', chunkNum+1, 'of', chunkCount, ':', playhead, 'to', playhead+chunkDuration, 'sec');
+					(chunkNum+1) + '.mp3'));
 
 				return new Promise(function(resolve, reject) {
-					var chunkCommand = command.clone()
+					var chunkCommand = ffmpeg()
 					.input(mp3FileName)
 					.audioBitrate(128)
 					.audioChannels(1)
 					.seek(playhead)
 					.duration(chunkDuration)
-					.on('end', resolve)
+					.on('error', function(err, stdout, stderr) {
+						console.log('Cannot process mp3: ' + err.message);
+						reject(err);
+					})					
+					.on('end', function() {
+						bar.tick(1);
+						resolve();
+					}) 
 					.save(chunkName)
 				});
 			}, {
-				concurrency: 2,
+				concurrency: 5,
 			})
 			.then(function() {
-				console.log('======== done chunkifying ========');
+				console.log('done');
 				resolve();
 			})
 
