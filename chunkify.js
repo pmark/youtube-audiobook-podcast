@@ -63,7 +63,7 @@ function chunkify(mp3FileName) {
 				.input(mp3FileName)
 				.audioBitrate(128)
 				.audioChannels(1)
-				.seekInput(playhead)
+				.seek(playhead)
 				.duration(chunkDuration)
 				.on('end', function() {
 					secondsRemaining = (secondsRemaining - chunkDuration);
