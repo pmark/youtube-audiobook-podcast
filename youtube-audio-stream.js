@@ -4,32 +4,44 @@ var ProgressBar = require('progress');
 var through  = require('through2');
 var defaults = require('./defaults');
 var fs       = require('fs');
-var rp = require('request-promise');
+var rp       = require('request-promise');
+var path     = require('path');
+var downloadImage = require('./download-image.js');
 
-var outputFileName = null;
-var downloadSize = null;
-var bar = null;
+var DOWNLOADS_DIR = 'downloads';
 
 module.exports = streamify;
 
-function streamify(uri, opt) {
+function streamify(videoId, opt) {
   defaults.set(opt = opt || {});
 
   return new Promise(function(resolve, reject) {
-
+    var uri = 'https://www.youtube.com/watch?v=' + videoId;
     var videoReadStream = ytdl(uri, {
       filter: filterVideo,
       quality: opt.quality
     });
 
-
     videoReadStream.on('info', function(info, format) {
-      // console.log('info event:', format);
-      if (!fs.existsSync('downloads')) { fs.mkdirSync('downloads'); }
-      outputFileName = info.title.trim().toLowerCase().replace(/[\s\W]+/g, '-');
-      outputFileName = 'downloads/' + outputFileName + '.mp3';
+      // console.log('info event:', info);
 
-      fetchVideoSize(format.url)
+      if (!fs.existsSync(DOWNLOADS_DIR)) { fs.mkdirSync(DOWNLOADS_DIR); }
+
+      var outputFileName = info.title.trim().toLowerCase().replace(/[\s\W]+/g, '-');
+      var outputFilePath = path.join(DOWNLOADS_DIR, outputFileName + '.mp3');
+      var bar = null;
+      var imgDir = path.join(DOWNLOADS_DIR, outputFileName);
+      if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
+      var imgPath = path.join(imgDir, 'cover.jpg');
+
+      fetchThumbnail(info.thumbnail_url, imgPath)
+      .then(function() {
+        // save image
+        throw new Error('bail')
+      })
+      .then(function() {
+        return fetchVideoSize(format.url);
+      })
       .then(function(downloadSize) {    
         
         videoReadStream.on('data', function (chunk) {
@@ -43,10 +55,10 @@ function streamify(uri, opt) {
           bar.tick(chunk.length);
         });
 
-        var writeStream = fs.createWriteStream(outputFileName);
+        var writeStream = fs.createWriteStream(outputFilePath);
 
         writeStream.on('close', function () {
-          resolve(outputFileName);
+          resolve(outputFilePath);
         });
 
         writeStream.on('error', function (err) {
@@ -78,3 +90,15 @@ function fetchVideoSize(url) {
     return null;
   })  
 }
+
+function fetchThumbnail(url, imgPath) {
+  console.log('fetchThumbnail:', url);
+
+  return downloadImage(url, imgPath)
+  .catch(function(err) {
+    console.log('error fetching thumbnail:', err);
+    return null;
+  });
+}
+
+streamify('V44YvBUHkt4');

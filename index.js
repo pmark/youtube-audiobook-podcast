@@ -18,9 +18,8 @@ if (process.argv.length < 3) {
 }
 
 var videoId = process.argv[2]
-var videoURL = 'https://www.youtube.com/watch?v=' + videoId;
 
-saveVideoToMP3(videoURL)
+saveVideoToMP3(videoId)
 .then(chunkify)
 .then(generateRSS)
 .then(syncToS3)
