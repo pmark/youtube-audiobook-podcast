@@ -9,6 +9,7 @@
 var saveVideoToMP3 = require('./youtube-audio-stream')
 var chunkify = require('./chunkify')
 var syncToS3 = require('./s3-sync');
+var generateRSS = require('./generate-rss');
 
 
 if (process.argv.length < 3) {
@@ -21,6 +22,7 @@ var videoURL = 'https://www.youtube.com/watch?v=' + videoId;
 
 saveVideoToMP3(videoURL)
 .then(chunkify)
+.then(generateRSS)
 .then(syncToS3)
 .catch(function(err) {
 	console.log('Error:', err);
