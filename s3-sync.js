@@ -53,5 +53,5 @@ function syncDir(localDir) {
   });
 }
 
-syncDir('downloads/hocus-pocus-by-kurt-vonnegut')
+// syncDir('downloads/hocus-pocus-by-kurt-vonnegut')
 // syncDir('downloads/test')
