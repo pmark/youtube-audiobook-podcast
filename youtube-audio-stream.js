@@ -25,7 +25,7 @@ function streamify(uri, opt) {
 
     videoReadStream.on('info', function(info, format) {
       // console.log('info event:', format);
-      if (!fs.exists('downloads')) { fs.mkdirSync('downloads'); }
+      if (!fs.existsSync('downloads')) { fs.mkdirSync('downloads'); }
       outputFileName = info.title.trim().toLowerCase().replace(/[\s\W]+/g, '-');
       outputFileName = 'downloads/' + outputFileName + '.mp3';
 

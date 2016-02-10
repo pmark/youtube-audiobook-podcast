@@ -85,7 +85,7 @@ function chunkify(mp3FileName) {
 					.save(chunkName)
 				});
 			}, {
-				concurrency: 5,
+				concurrency: 2,
 			})
 			.then(function() {
 				console.log('done');
@@ -97,5 +97,5 @@ function chunkify(mp3FileName) {
 	});
 }
 
-chunkify('downloads/the-untethered-soul-by-michael-singer-audiobook-chapter-1-the-voice-inside-your-head.mp3');
+// chunkify('downloads/the-untethered-soul-by-michael-singer-audiobook-chapter-1-the-voice-inside-your-head.mp3');
 
