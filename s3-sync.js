@@ -30,7 +30,7 @@ function syncDir(localDir) {
      
       s3Params: {
         Bucket: "martianrover.com",
-        Prefix: "assets/" + dirName + "/",
+        Prefix: "assets/audiobooks/" + dirName + "/",
         // other options supported by putObject, except Body and ContentLength. 
         // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property 
       },

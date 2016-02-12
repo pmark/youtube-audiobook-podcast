@@ -9,7 +9,7 @@ module.exports = generateRSS;
 function generateRSS(localDir) {
     var titleSlug = path.basename(localDir);
     var title = capFirsts(titleSlug.replace(/-/g, ' '));
-    var webPath = `martianrover.com/assets/${titleSlug}`;
+    var webPath = `martianrover.com/assets/audiobooks/${titleSlug}`;
     var podcastFileName = 'podcast.xml';
 
     var feed = new RSS({
