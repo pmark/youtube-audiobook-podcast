@@ -3,6 +3,8 @@ module.exports = syncDir;
 var s3 = require('s3');
 var path = require('path');
 var config = require('./s3-config.json');
+var tmp = require('tmp');
+var fs = require('fs');
 
 var client = s3.createClient({
   maxAsyncS3: 20,     // this is the default 
@@ -18,7 +20,9 @@ var client = s3.createClient({
   },
 });
 
-function syncDir(localDir) {
+var S3 = {};
+
+S3.syncDir = function(localDir) {
   var dirName = path.basename(localDir);
 
   return new Promise(function(resolve, reject) {
@@ -29,8 +33,8 @@ function syncDir(localDir) {
                             // that have no corresponding local file. 
      
       s3Params: {
-        Bucket: "martianrover.com",
-        Prefix: "assets/audiobooks/" + dirName + "/",
+        Bucket: 'martianrover.com',
+        Prefix: 'assets/audiobooks/' + dirName + '/',
         // other options supported by putObject, except Body and ContentLength. 
         // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property 
       },
@@ -39,19 +43,57 @@ function syncDir(localDir) {
 
     var uploader = client.uploadDir(params);
     uploader.on('error', function(err) {
-      console.error("unable to sync:", err.stack);
+      console.error('unable to sync:', err.stack);
       reject(err);
     });
     uploader.on('progress', function() {
-      console.log("progress", uploader.progressAmount, uploader.progressTotal);
+      console.log('progress', uploader.progressAmount, uploader.progressTotal);
     });
     uploader.on('end', function() {
-      console.log("done uploading");
+      console.log('done uploading');
       resolve();
     });
 
   });
-}
+};
+
+S3.uploadJSON = function(data, bucketPath) {
+  var tmpobj = tmp.fileSync();
+  console.log("tmp file: ", tmpobj.name);
+
+  fs.writeFileSync(fd, JSON.stringify(data));
+  return S3.uploadFile(tmpobj.name, 'assets/audiobooks/podcasts.json');
+};
+
+S3.uploadFile = function(filePath, bucketPath) {
+  return new Promise(function(resolve, reject) {
+    var params = {
+      localFile: filePath,
+     
+      s3Params: {
+        Bucket: 'martianrover.com',
+        Key: bucketPath,
+        // other options supported by putObject, except Body and ContentLength. 
+        // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property 
+      },
+    };
+
+    console.log('Uploading', filePath);
+    var uploader = client.uploadFile(params);
+    uploader.on('error', function(err) {
+      console.error('unable to upload:', err.stack);
+      reject(err);
+    });
+    uploader.on('progress', function() {
+      console.log('progress', uploader.progressMd5Amount,
+                uploader.progressAmount, uploader.progressTotal);
+    });
+    uploader.on('end', function() {
+      console.log('done uploading file to s3');
+      resolve();
+    });
+  });
+};
 
 // syncDir('downloads/hocus-pocus-by-kurt-vonnegut')
 // syncDir('downloads/test')

@@ -18,6 +18,8 @@ function streamify(videoId, opt) {
 
   return new Promise(function(resolve, reject) {
     var uri = 'https://www.youtube.com/watch?v=' + videoId;
+
+    console.log('Downloading video at', uri);
     var videoReadStream = ytdl(uri, {
       filter: filterVideo,
       quality: opt.quality
@@ -30,20 +32,21 @@ function streamify(videoId, opt) {
 
       var outputFileName = util.slugForTitle(info.title);
       var outputFilePath = path.join(DOWNLOADS_DIR, outputFileName + '.mp3');
+
+      if (fs.existsSync(outputFilePath)) {
+        resolve(outputFilePath);
+      }
+
       var bar = null;
       var imgDir = path.join(DOWNLOADS_DIR, outputFileName);
       if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
       var imgPath = path.join(imgDir, 'cover.jpg');
 
-      fetchThumbnail(info.thumbnail_url, imgPath)
-      .then(function() {
-        // save image
-        throw new Error('bail')
-      })
+      fetchThumbnail(info.iurlhq, imgPath)
       .then(function() {
         return fetchVideoSize(format.url);
       })
-      .then(function(downloadSize) {    
+      .then(function(downloadSize) {
         
         videoReadStream.on('data', function (chunk) {
           bar = bar || new ProgressBar('Downloading [:bar] :percent, :elapsed sec, :eta sec remaining, :current / :total', {
@@ -102,4 +105,4 @@ function fetchThumbnail(url, imgPath) {
   });
 }
 
-streamify('V44YvBUHkt4');
+// streamify('V44YvBUHkt4');

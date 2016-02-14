@@ -38,19 +38,25 @@ function playlistInfo(apiKey, playlistId, done) {
 
 ////////
 function getNextPlaylistVideo() {
+
+  console.log('Getting published podcasts...');
   return rp('http://martianrover.com/assets/audiobooks/podcasts.json')
   .then((body) => {
+    console.log('existing podcasts:', body);
     return JSON.parse(body);
-    console.log('existing podcasts:', podcasts);
   })
   .then((podcasts) => {
     return new Promise(function(resolve, reject) {  
       playlistInfo(config.apiKey, config.playlistID, function(playlistItems) {
         var unpublished = {};
 
-        playlistItems.each((item) => {
+        playlistItems.forEach((item) => {
+
           var playlistItemSlug = util.slugForTitle(item.title);
+          if (playlistItemSlug === 'deleted-video') return;
           var publishedItem = podcasts[playlistItemSlug];
+
+          console.log(`${publishedItem ? '[PUBLISHED]' : '           ' }  ${playlistItemSlug}`);
 
           if (!publishedItem) {
             unpublished[playlistItemSlug] = item.resourceId.videoId;
@@ -66,11 +72,12 @@ function getNextPlaylistVideo() {
           nextUnpublishedVideoId = unpublished[nextSlug];
         }
 
-        return {
+        console.log('next video:', nextSlug, nextUnpublishedVideoId);
+        resolve({
            publishedPodcasts: podcasts,
            nextUnpublishedVideoId: nextUnpublishedVideoId,
            nextUnpublishedVideoSlug: nextSlug,
-        };
+        });
       });
     });
   });

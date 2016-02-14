@@ -10,10 +10,8 @@ var getNextPlaylistVideo = require('./youtube-playlist');
 var saveVideoToMP3 = require('./youtube-audio-stream');
 var chunkify = require('./chunkify');
 var generateRSS = require('./generate-rss');
-var syncToS3 = require('./s3-sync');
+var S3 = require('./s3');
 var publishedPodcasts = null;
-var nextVideoSlug = null;
-
 var newPodcast = {};
 
 getNextPlaylistVideo()
@@ -30,10 +28,13 @@ getNextPlaylistVideo()
 	return newPodcast.slug;
 })
 .then(generateRSS)
-.then(syncToS3)
+.then(S3.syncDir)
 .then(() => {
 	publishedPodcasts[newPodcast.slug] = newPodcast.size;
 	console.log('TO DO: Update master podcast XML', publishedPodcasts);
+
+	S3.uploadFile('./podcasts.json')
+
 })
 .catch(function(err) {
 	console.log('Error:', err);
