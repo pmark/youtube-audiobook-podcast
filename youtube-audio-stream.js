@@ -8,8 +8,7 @@ var rp       = require('request-promise');
 var path     = require('path');
 var downloadImage = require('./download-image.js');
 var util     = require('./util');
-
-var DOWNLOADS_DIR = 'downloads';
+var Constants = require('./constants');
 
 module.exports = streamify;
 
@@ -19,7 +18,6 @@ function streamify(videoId, opt) {
   return new Promise(function(resolve, reject) {
     var uri = 'https://www.youtube.com/watch?v=' + videoId;
 
-    console.log('Downloading video at', uri);
     var videoReadStream = ytdl(uri, {
       filter: filterVideo,
       quality: opt.quality
@@ -28,17 +26,21 @@ function streamify(videoId, opt) {
     videoReadStream.on('info', function(info, format) {
       // console.log('info event:', info);
 
-      if (!fs.existsSync(DOWNLOADS_DIR)) { fs.mkdirSync(DOWNLOADS_DIR); }
+      if (!fs.existsSync(Constants.DOWNLOADS_DIR)) { fs.mkdirSync(Constants.DOWNLOADS_DIR); }
 
       var outputFileName = util.slugForTitle(info.title);
-      var outputFilePath = path.join(DOWNLOADS_DIR, outputFileName + '.mp3');
+      var outputFilePath = path.join(Constants.DOWNLOADS_DIR, outputFileName + '.mp3');
 
       if (fs.existsSync(outputFilePath)) {
+        console.log('Already downloaded.');
         resolve(outputFilePath);
+        return;
       }
 
+      console.log('Downloading video at', uri);
+
       var bar = null;
-      var imgDir = path.join(DOWNLOADS_DIR, outputFileName);
+      var imgDir = path.join(Constants.DOWNLOADS_DIR, outputFileName);
       if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
       var imgPath = path.join(imgDir, 'cover.jpg');
 

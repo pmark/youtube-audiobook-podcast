@@ -4,10 +4,11 @@ var moment = require('moment');
 var pubDate = moment();
 var path = require('path');
 var WORD_EXCLUSIONS = 'by a and an the'.split(' ');
+var Constants = require('./constants');
 
 module.exports = generateRSS;
-function generateRSS(localDir) {
-    var titleSlug = path.basename(localDir);
+function generateRSS(titleSlug) {
+    var localDir = path.join(Constants.DOWNLOADS_DIR, titleSlug);
     var title = capFirsts(titleSlug.replace(/-/g, ' '));
     var webPath = `martianrover.com/assets/audiobooks/${titleSlug}`;
     var podcastFileName = 'podcast.xml';
@@ -33,13 +34,13 @@ function generateRSS(localDir) {
     });
 
     var files = listMP3Files(localDir);
-    var itemDate = pubDate.subtract(files.length, 'hours');
+    var itemDate = moment();
 
     files.forEach(function(filePath, i) {
         var fileName = path.basename(filePath);
         var url = `https://s3.amazonaws.com/${webPath}/${fileName}`;
 
-        itemDate.add(1, 'hour');
+        itemDate.subtract(1, 'hour');
 
         feed.item({
             title:  `Hour ${i+1}`,
@@ -69,7 +70,7 @@ function generateRSS(localDir) {
                 reject(err);
             }
             else {
-                resolve();
+                resolve(localDir);
             }
         });
     });

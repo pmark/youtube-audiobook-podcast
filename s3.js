@@ -1,10 +1,10 @@
-module.exports = syncDir;
 
 var s3 = require('s3');
 var path = require('path');
 var config = require('./s3-config.json');
 var tmp = require('tmp');
 var fs = require('fs');
+var Constants = require('./constants');
 
 var client = s3.createClient({
   maxAsyncS3: 20,     // this is the default 
@@ -39,7 +39,7 @@ S3.syncDir = function(localDir) {
         // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property 
       },
     };
-    console.log('params:', params);
+    console.log('sync params:', params);
 
     var uploader = client.uploadDir(params);
     uploader.on('error', function(err) {
@@ -61,8 +61,8 @@ S3.uploadJSON = function(data, bucketPath) {
   var tmpobj = tmp.fileSync();
   console.log("tmp file: ", tmpobj.name);
 
-  fs.writeFileSync(fd, JSON.stringify(data));
-  return S3.uploadFile(tmpobj.name, 'assets/audiobooks/podcasts.json');
+  fs.writeFileSync(tmpobj.name, JSON.stringify(data));
+  return S3.uploadFile(tmpobj.name, Constants.PODCASTS_JSON_PATH);
 };
 
 S3.uploadFile = function(filePath, bucketPath) {
@@ -94,6 +94,8 @@ S3.uploadFile = function(filePath, bucketPath) {
     });
   });
 };
+
+module.exports = S3;
 
 // syncDir('downloads/hocus-pocus-by-kurt-vonnegut')
 // syncDir('downloads/test')

@@ -11,6 +11,8 @@ var saveVideoToMP3 = require('./youtube-audio-stream');
 var chunkify = require('./chunkify');
 var generateRSS = require('./generate-rss');
 var S3 = require('./s3');
+var Constants = require('./constants');
+
 var publishedPodcasts = null;
 var newPodcast = {};
 
@@ -33,7 +35,7 @@ getNextPlaylistVideo()
 	publishedPodcasts[newPodcast.slug] = newPodcast.size;
 	console.log('TO DO: Update master podcast XML', publishedPodcasts);
 
-	S3.uploadFile('./podcasts.json')
+	S3.uploadJSON(publishedPodcasts, Constants.PODCASTS_JSON_PATH);
 
 })
 .catch(function(err) {

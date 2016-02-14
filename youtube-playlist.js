@@ -3,6 +3,7 @@ var youtube = require('youtube-api');
 var rp = require('request-promise');
 var fs = require('fs');
 var util = require('./util');
+var Constants = require('./constants');
 
 function playlistInfoRecursive(playlistId, callStackSize, pageToken, currentItems, callback) {
   youtube.playlistItems.list({
@@ -40,7 +41,7 @@ function playlistInfo(apiKey, playlistId, done) {
 function getNextPlaylistVideo() {
 
   console.log('Getting published podcasts...');
-  return rp('http://martianrover.com/assets/audiobooks/podcasts.json')
+  return rp(`http://martianrover.com/${Constants.PODCASTS_JSON_PATH}`)
   .then((body) => {
     console.log('existing podcasts:', body);
     return JSON.parse(body);
