@@ -7,6 +7,7 @@ var fs       = require('fs');
 var rp       = require('request-promise');
 var path     = require('path');
 var downloadImage = require('./download-image.js');
+var util     = require('./util');
 
 var DOWNLOADS_DIR = 'downloads';
 
@@ -27,7 +28,7 @@ function streamify(videoId, opt) {
 
       if (!fs.existsSync(DOWNLOADS_DIR)) { fs.mkdirSync(DOWNLOADS_DIR); }
 
-      var outputFileName = info.title.trim().toLowerCase().replace(/[\s\W]+/g, '-');
+      var outputFileName = util.slugForTitle(info.title);
       var outputFilePath = path.join(DOWNLOADS_DIR, outputFileName + '.mp3');
       var bar = null;
       var imgDir = path.join(DOWNLOADS_DIR, outputFileName);

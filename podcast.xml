@@ -1,0 +1,223 @@
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+<channel>
+<title>
+<![CDATA[ Hocus Pocus by Kurt Vonnegut ]]>
+</title>
+<description>
+<![CDATA[ Audiobook ]]>
+</description>
+<link>http://martianrover.com</link>
+<image>
+<url>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/cover.jpg
+</url>
+<title>Hocus Pocus by Kurt Vonnegut</title>
+<link>http://martianrover.com</link>
+</image>
+<generator>RSS for Node</generator>
+<lastBuildDate>Wed, 10 Feb 2016 06:25:29 GMT</lastBuildDate>
+<atom:link href="http://martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/podcast.xml" rel="self" type="application/rss+xml"/>
+<pubDate>Wed, 10 Feb 2016 06:25:29 GMT</pubDate>
+<copyright>
+<![CDATA[ Copyright 2016 ]]>
+</copyright>
+<language>
+<![CDATA[ en ]]>
+</language>
+<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+<ttl>60</ttl>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<item>
+<title>
+<![CDATA[ Hour 1 ]]>
+</title>
+<description>
+<![CDATA[ 0:00 ]]>
+</description>
+<link>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour01.mp3
+</link>
+<guid isPermaLink="true">
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour01.mp3
+</guid>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<pubDate>Tue, 09 Feb 2016 21:25:29 GMT</pubDate>
+<enclosure url="https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour01.mp3" length="57601181" type="audio/mpeg"/>
+</item>
+<item>
+<title>
+<![CDATA[ Hour 2 ]]>
+</title>
+<description>
+<![CDATA[ 1:00 ]]>
+</description>
+<link>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour02.mp3
+</link>
+<guid isPermaLink="true">
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour02.mp3
+</guid>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<pubDate>Tue, 09 Feb 2016 22:25:29 GMT</pubDate>
+<enclosure url="https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour02.mp3" length="57601181" type="audio/mpeg"/>
+</item>
+<item>
+<title>
+<![CDATA[ Hour 3 ]]>
+</title>
+<description>
+<![CDATA[ 2:00 ]]>
+</description>
+<link>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour03.mp3
+</link>
+<guid isPermaLink="true">
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour03.mp3
+</guid>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<pubDate>Tue, 09 Feb 2016 23:25:29 GMT</pubDate>
+<enclosure url="https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour03.mp3" length="57601181" type="audio/mpeg"/>
+</item>
+<item>
+<title>
+<![CDATA[ Hour 4 ]]>
+</title>
+<description>
+<![CDATA[ 3:00 ]]>
+</description>
+<link>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour04.mp3
+</link>
+<guid isPermaLink="true">
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour04.mp3
+</guid>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<pubDate>Wed, 10 Feb 2016 00:25:29 GMT</pubDate>
+<enclosure url="https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour04.mp3" length="57601181" type="audio/mpeg"/>
+</item>
+<item>
+<title>
+<![CDATA[ Hour 5 ]]>
+</title>
+<description>
+<![CDATA[ 4:00 ]]>
+</description>
+<link>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour05.mp3
+</link>
+<guid isPermaLink="true">
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour05.mp3
+</guid>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<pubDate>Wed, 10 Feb 2016 01:25:29 GMT</pubDate>
+<enclosure url="https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour05.mp3" length="57601181" type="audio/mpeg"/>
+</item>
+<item>
+<title>
+<![CDATA[ Hour 6 ]]>
+</title>
+<description>
+<![CDATA[ 5:00 ]]>
+</description>
+<link>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour06.mp3
+</link>
+<guid isPermaLink="true">
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour06.mp3
+</guid>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<pubDate>Wed, 10 Feb 2016 02:25:29 GMT</pubDate>
+<enclosure url="https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour06.mp3" length="57601181" type="audio/mpeg"/>
+</item>
+<item>
+<title>
+<![CDATA[ Hour 7 ]]>
+</title>
+<description>
+<![CDATA[ 6:00 ]]>
+</description>
+<link>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour07.mp3
+</link>
+<guid isPermaLink="true">
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour07.mp3
+</guid>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<pubDate>Wed, 10 Feb 2016 03:25:29 GMT</pubDate>
+<enclosure url="https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour07.mp3" length="57601181" type="audio/mpeg"/>
+</item>
+<item>
+<title>
+<![CDATA[ Hour 8 ]]>
+</title>
+<description>
+<![CDATA[ 7:00 ]]>
+</description>
+<link>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour08.mp3
+</link>
+<guid isPermaLink="true">
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour08.mp3
+</guid>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<pubDate>Wed, 10 Feb 2016 04:25:29 GMT</pubDate>
+<enclosure url="https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour08.mp3" length="57601181" type="audio/mpeg"/>
+</item>
+<item>
+<title>
+<![CDATA[ Hour 9 ]]>
+</title>
+<description>
+<![CDATA[ 8:00 ]]>
+</description>
+<link>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour09.mp3
+</link>
+<guid isPermaLink="true">
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour09.mp3
+</guid>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<pubDate>Wed, 10 Feb 2016 05:25:29 GMT</pubDate>
+<enclosure url="https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour09.mp3" length="57601181" type="audio/mpeg"/>
+</item>
+<item>
+<title>
+<![CDATA[ Hour 10 ]]>
+</title>
+<description>
+<![CDATA[ 9:00 ]]>
+</description>
+<link>
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour10.mp3
+</link>
+<guid isPermaLink="true">
+https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour10.mp3
+</guid>
+<category>
+<![CDATA[ Audiobook ]]>
+</category>
+<pubDate>Wed, 10 Feb 2016 06:25:29 GMT</pubDate>
+<enclosure url="https://s3.amazonaws.com/martianrover.com/assets/audiobooks/hocus-pocus-by-kurt-vonnegut/hour10.mp3" length="43485864" type="audio/mpeg"/>
+</item>
+</channel>
+</rss>

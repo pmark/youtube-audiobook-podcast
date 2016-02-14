@@ -1,5 +1,8 @@
+var config = require('./youtube-config.json');
 var youtube = require('youtube-api');
+var rp = require('request-promise');
 var fs = require('fs');
+var util = require('./util');
 
 function playlistInfoRecursive(playlistId, callStackSize, pageToken, currentItems, callback) {
   youtube.playlistItems.list({
@@ -24,9 +27,7 @@ function playlistInfoRecursive(playlistId, callStackSize, pageToken, currentItem
 }
 
 
-module.exports = playlistInfo;
 function playlistInfo(apiKey, playlistId, done) {
-
   youtube.authenticate({
     type: 'key',
     key: apiKey,
@@ -35,13 +36,47 @@ function playlistInfo(apiKey, playlistId, done) {
   playlistInfoRecursive(playlistId, 0, null, [], done);
 };
 
-// pullPlayList("playlist id here", "name of mp3 here");
+////////
+function getNextPlaylistVideo() {
+  return rp('http://martianrover.com/assets/audiobooks/podcasts.json')
+  .then((body) => {
+    return JSON.parse(body);
+    console.log('existing podcasts:', podcasts);
+  })
+  .then((podcasts) => {
+    return new Promise(function(resolve, reject) {  
+      playlistInfo(config.apiKey, config.playlistID, function(playlistItems) {
+        var unpublished = {};
+
+        playlistItems.each((item) => {
+          var playlistItemSlug = util.slugForTitle(item.title);
+          var publishedItem = podcasts[playlistItemSlug];
+
+          if (!publishedItem) {
+            unpublished[playlistItemSlug] = item.resourceId.videoId;
+          }
+        });
+
+        var unpublishedSlugs = Object.keys(unpublished || {});
+        var nextSlug = null;
+        var nextUnpublishedVideoId = null;
+
+        if (unpublishedSlugs && unpublishedSlugs.length > 0) {
+          nextSlug = unpublishedSlugs[0];
+          nextUnpublishedVideoId = unpublished[nextSlug];
+        }
+
+        return {
+           publishedPodcasts: podcasts,
+           nextUnpublishedVideoId: nextUnpublishedVideoId,
+           nextUnpublishedVideoSlug: nextSlug,
+        };
+      });
+    });
+  });
+  
+}
 
 ////////
 
-var config = require('./youtube-config.json');
-playlistInfo(config.apiKey, config.playlistID, function(playlistItems) {
-  var videoIds = playlistItems.map((item) => item.resourceId.videoId);
-  // console.log(playlistItems);
-  console.log(videoIds);
-});
+module.exports = getNextPlaylistVideo;

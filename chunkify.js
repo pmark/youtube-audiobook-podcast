@@ -88,8 +88,8 @@ function chunkify(mp3FileName) {
 				concurrency: 2,
 			})
 			.then(function() {
-				console.log('done');
-				resolve();
+				console.log('done chunkifying', chunkCount, 'items');
+				resolve(chunkCount);
 			})
 
 		});

@@ -6,23 +6,35 @@
 // create and upload a podcast XML file
 
 
-var saveVideoToMP3 = require('./youtube-audio-stream')
-var chunkify = require('./chunkify')
-var syncToS3 = require('./s3-sync');
+var getNextPlaylistVideo = require('./youtube-playlist');
+var saveVideoToMP3 = require('./youtube-audio-stream');
+var chunkify = require('./chunkify');
 var generateRSS = require('./generate-rss');
+var syncToS3 = require('./s3-sync');
+var publishedPodcasts = null;
+var nextVideoSlug = null;
 
+var newPodcast = {};
 
-if (process.argv.length < 3) {
-	console.log("Missing argument: youtube video ID")
-	process.exit();
-}
-
-var videoId = process.argv[2]
-
-saveVideoToMP3(videoId)
+getNextPlaylistVideo()
+.then((data) => {
+	publishedPodcasts = data.publishedPodcasts;
+	newPodcast.slug = data.nextUnpublishedVideoSlug;
+	newPodcast.videoId = data.nextUnpublishedVideoId;
+	return newPodcast.videoId;
+})
+.then(saveVideoToMP3)
 .then(chunkify)
+.then((newPodcastSize) => {
+	newPodcast.size = newPodcastSize;
+	return newPodcast.slug;
+})
 .then(generateRSS)
 .then(syncToS3)
+.then(() => {
+	publishedPodcasts[newPodcast.slug] = newPodcast.size;
+	console.log('TO DO: Update master podcast XML', publishedPodcasts);
+})
 .catch(function(err) {
 	console.log('Error:', err);
 });	
