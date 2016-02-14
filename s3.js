@@ -15,6 +15,10 @@ var client = s3.createClient({
   s3Options: {
     accessKeyId: config.accessKeyId,
     secretAccessKey: config.secretAccessKey,
+    logger: process.stdout,
+    httpOptions: {
+      timeout: 60000 * 5,  // default is 120000 (2 minutes)
+    },
     // any other options are passed to new AWS.S3() 
     // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property 
   },

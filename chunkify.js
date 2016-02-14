@@ -68,6 +68,12 @@ function chunkify(mp3FileName) {
 					(chunkNum+1) + '.mp3'));
 
 				return new Promise(function(resolve, reject) {
+					if (fs.existsSync(chunkName)) {
+						console.log('Chunk exists:', chunkName);
+						resolve();
+						return;
+					}
+
 					var chunkCommand = ffmpeg()
 					.input(mp3FileName)
 					.audioBitrate(128)
