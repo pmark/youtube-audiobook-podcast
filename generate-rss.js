@@ -42,7 +42,7 @@ function generateRSS(titleSlug) {
         var fileSize = fs.statSync(filePath).size;
         var h = i + 1;
 
-        itemDate.subtract(1, 'second');
+        itemDate.subtract(1, 'minute');
 
         feed.item({
             title:  `${i}:00 ${util.capFirsts(title)}`,

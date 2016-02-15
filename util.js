@@ -1,11 +1,13 @@
+var fs = require('fs');
+var path = require('path');
 
 module.exports.slugForTitle = function(title) {
 	return title.trim().replace(/\W/g, '-').replace(/^-|--{1}|-$/g, '').toLowerCase();
-}
+};
 
 module.exports.titleForSlug = function(slug) {
 	return module.exports.capFirsts(slug.replace(/-/g, ' '));
-}
+};
 
 module.exports.capFirsts = function(str) {
 	var WORD_EXCLUSIONS = 'by a and an the'.split(' ');
@@ -21,5 +23,13 @@ module.exports.capFirsts = function(str) {
         pieces[i] = letter + word.substr(1);
     }
     return pieces.join(' ');
-}
+};
 
+module.exports.listFiles = function(dir) {
+    var files = fs.readdirSync(dir);
+    return files.map(function (file) {
+        return path.join(dir, file);
+    }).filter(function (file) {
+        return fs.statSync(file).isFile();
+    });
+};

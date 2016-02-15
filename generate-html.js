@@ -17,6 +17,6 @@ module.exports = function(podcasts) {
 	});
 
 	html.push('</ul>');
-	console.log('html:\n', html.join(''));
+	// console.log('html:\n', html.join(''));
 	fs.writeFileSync('./index.html', html.join(''));
 };

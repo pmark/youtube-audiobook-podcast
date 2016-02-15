@@ -4,8 +4,11 @@ var path = require('path');
 var config = require('./s3-config.json');
 var tmp = require('tmp');
 var fs = require('fs');
+var path = require('path');
 var Constants = require('./constants');
+var util = require('./util');
 var moment = require('moment');
+var Promise = require('bluebird');
 
 var client = s3.createClient({
   maxAsyncS3: 20,     // this is the default 
@@ -91,6 +94,26 @@ S3.uploadFile = function(filePath, bucketPath) {
     });
   });
 };
+
+S3.uploadDir = function(localDir) {
+  var slug = path.basename(localDir);
+  var files = util.listFiles(localDir);
+
+  return Promise.map(files, (filePath) => {
+    var fileName = path.basename(filePath);
+    var bucketPath = `assets/audiobooks/${slug}/${fileName}`;
+    return S3.uploadFile(filePath, bucketPath);
+  },
+  {
+    concurrency: 1,
+  })
+  .then((err) => {
+    console.log('Done uploading dir.', (err ? err : ''));
+  });
+
+};
+
+////////////////////////////////////////////////////////
 
 var outputAt = moment();
 function progress(uploader) {

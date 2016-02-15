@@ -36,7 +36,7 @@ function streamify(videoId, opt) {
         return;
       }
 
-      console.log('Downloading video at', uri);
+      console.log('Downloading video to', outputFilePath, 'from', uri);
 
       var bar = null;
       var imgDir = path.join(Constants.DOWNLOADS_DIR, outputFileName);

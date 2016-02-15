@@ -40,7 +40,7 @@ getNextPlaylistVideo()
 	return newPodcast.slug;
 })
 .then(generateRSS)
-.then(S3.syncDir)
+.then(S3.uploadDir)
 .then(() => {
 	// update index.json
 	console.log('Updating index.json');
