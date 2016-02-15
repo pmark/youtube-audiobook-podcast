@@ -32,7 +32,6 @@ function streamify(videoId, opt) {
       var outputFilePath = path.join(Constants.DOWNLOADS_DIR, outputFileName + '.mp3');
 
       if (fs.existsSync(outputFilePath)) {
-        console.log('Already downloaded.');
         resolve(outputFilePath);
         return;
       }

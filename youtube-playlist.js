@@ -43,7 +43,7 @@ function getNextPlaylistVideo() {
   console.log('Getting published podcasts...');
   return rp(`http://martianrover.com/${Constants.PODCASTS_JSON_PATH}`)
   .then((body) => {
-    console.log('existing podcasts:', body);
+    console.log('Existing podcasts:', body, '\n');
     return JSON.parse(body);
   })
   .then((podcasts) => {
@@ -52,7 +52,7 @@ function getNextPlaylistVideo() {
         var unpublished = {};
 
         playlistItems.forEach((item) => {
-
+          if (!item) return;
           var playlistItemSlug = util.slugForTitle(item.title);
           if (playlistItemSlug === 'deleted-video') return;
           var publishedItem = podcasts[playlistItemSlug];
@@ -73,7 +73,8 @@ function getNextPlaylistVideo() {
           nextUnpublishedVideoId = unpublished[nextSlug];
         }
 
-        console.log('next video:', nextSlug, nextUnpublishedVideoId);
+        console.log('\n\n');
+
         resolve({
            publishedPodcasts: podcasts,
            nextUnpublishedVideoId: nextUnpublishedVideoId,

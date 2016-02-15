@@ -8,10 +8,10 @@ var path = require('path');
 
 module.exports = chunkify;
 
-function chunkify(mp3FileName) {
+function chunkify(mp3FilePath) {
 
-	var outputBaseDir = path.dirname(mp3FileName);
-	var outputDirName = path.basename(mp3FileName, '.mp3');
+	var outputBaseDir = path.dirname(mp3FilePath);
+	var outputDirName = path.basename(mp3FilePath, '.mp3');
 	var outputDir = path.join(outputBaseDir, outputDirName);
 	
 	if (!fs.existsSync(outputDir)) {
@@ -19,14 +19,14 @@ function chunkify(mp3FileName) {
 	}
 
 	return new Promise(function(resolve, reject) {
-		console.log('chunkifying:', mp3FileName);
+		console.log('Chunkifying:', mp3FilePath);
 
 		var durationSec = 0;
 
-		ffmpeg(mp3FileName)
+		ffmpeg(mp3FilePath)
 		.ffprobe(function(err, data) {
 			durationSec = data.format.duration;
-			console.log('Total MP3 duration:', durationSec);
+			console.log('Total MP3 duration:', durationSec / 60, 'minutes');
 
 			var SecPerChunk = 3600;
 			var chunkCount = Math.ceil(durationSec / SecPerChunk);
@@ -69,13 +69,13 @@ function chunkify(mp3FileName) {
 
 				return new Promise(function(resolve, reject) {
 					if (fs.existsSync(chunkName)) {
-						console.log('Chunk exists:', chunkName);
+						// console.log('Chunk exists:', chunkName);
 						resolve();
 						return;
 					}
 
 					var chunkCommand = ffmpeg()
-					.input(mp3FileName)
+					.input(mp3FilePath)
 					.audioBitrate(128)
 					.audioChannels(1)
 					.seek(playhead)
@@ -94,7 +94,7 @@ function chunkify(mp3FileName) {
 				concurrency: 2,
 			})
 			.then(function() {
-				console.log('done chunkifying', chunkCount, 'item(s)');
+				console.log('\nDone chunkifying', chunkCount, 'item(s)');
 				resolve(chunkCount);
 			})
 

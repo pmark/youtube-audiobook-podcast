@@ -6,24 +6,34 @@
 // create and upload a podcast XML file
 
 
+var path = require('path');
 var getNextPlaylistVideo = require('./youtube-playlist');
 var saveVideoToMP3 = require('./youtube-audio-stream');
 var chunkify = require('./chunkify');
 var generateRSS = require('./generate-rss');
+var generateHTML = require('./generate-html');
 var S3 = require('./s3');
+var fs = require('fs');
+var combinePodcasts = require('./combine-podcasts');
 var Constants = require('./constants');
 
 var publishedPodcasts = null;
 var newPodcast = {};
+var mp3FilePath = process.argv[2];
 
 getNextPlaylistVideo()
 .then((data) => {
 	publishedPodcasts = data.publishedPodcasts;
-	newPodcast.slug = data.nextUnpublishedVideoSlug;
-	newPodcast.videoId = data.nextUnpublishedVideoId;
-	return newPodcast.videoId;
+
+	if (mp3FilePath) {
+		newPodcast.slug = path.basename(mp3FilePath, '.mp3');
+		return mp3FilePath;
+	}
+	else {
+		newPodcast.slug = data.nextUnpublishedVideoSlug;
+		return saveVideoToMP3(data.nextUnpublishedVideoId);
+	}
 })
-.then(saveVideoToMP3)
 .then(chunkify)
 .then((newPodcastSize) => {
 	newPodcast.size = newPodcastSize;
@@ -32,11 +42,27 @@ getNextPlaylistVideo()
 .then(generateRSS)
 .then(S3.syncDir)
 .then(() => {
+	// update index.json
+	console.log('Updating index.json');
 	publishedPodcasts[newPodcast.slug] = newPodcast.size;
-	console.log('TO DO: Update master podcast XML', publishedPodcasts);
-
-	S3.uploadJSON(publishedPodcasts, Constants.PODCASTS_JSON_PATH);
-
+	fs.writeFileSync('./index.json', JSON.stringify(publishedPodcasts));
+	return S3.uploadFile('./index.json', Constants.PODCASTS_JSON_PATH);
+})
+.then(() => {
+	// update index.html
+	console.log('Updating index.html');
+	generateHTML(publishedPodcasts);
+})
+.then(() => {
+	return S3.uploadFile('./index.html', Constants.PODCASTS_HTML_PATH);
+})
+.then(() => {
+	// update index.xml
+	console.log('Updating index.xml');
+	return combinePodcasts(publishedPodcasts);
+})
+.then(() => {
+	return S3.uploadFile('./index.xml', Constants.PODCASTS_XML_PATH);
 })
 .catch(function(err) {
 	console.log('Error:', err);

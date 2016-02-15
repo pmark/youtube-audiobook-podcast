@@ -5,6 +5,7 @@ var config = require('./s3-config.json');
 var tmp = require('tmp');
 var fs = require('fs');
 var Constants = require('./constants');
+var moment = require('moment');
 
 var client = s3.createClient({
   maxAsyncS3: 20,     // this is the default 
@@ -15,7 +16,7 @@ var client = s3.createClient({
   s3Options: {
     accessKeyId: config.accessKeyId,
     secretAccessKey: config.secretAccessKey,
-    logger: process.stdout,
+    // logger: process.stdout,
     httpOptions: {
       timeout: 60000 * 5,  // default is 120000 (2 minutes)
     },
@@ -44,15 +45,12 @@ S3.syncDir = function(localDir) {
       },
     };
     console.log('sync params:', params);
-
     var uploader = client.uploadDir(params);
     uploader.on('error', function(err) {
       console.error('unable to sync:', err.stack);
       reject(err);
     });
-    uploader.on('progress', function() {
-      console.log('progress', uploader.progressAmount, uploader.progressTotal);
-    });
+    uploader.on('progress', () => progress(uploader));
     uploader.on('end', function() {
       console.log('done uploading');
       resolve();
@@ -63,10 +61,8 @@ S3.syncDir = function(localDir) {
 
 S3.uploadJSON = function(data, bucketPath) {
   var tmpobj = tmp.fileSync();
-  console.log("tmp file: ", tmpobj.name);
-
   fs.writeFileSync(tmpobj.name, JSON.stringify(data));
-  return S3.uploadFile(tmpobj.name, Constants.PODCASTS_JSON_PATH);
+  return S3.uploadFile(tmpobj.name, bucketPath);
 };
 
 S3.uploadFile = function(filePath, bucketPath) {
@@ -88,16 +84,24 @@ S3.uploadFile = function(filePath, bucketPath) {
       console.error('unable to upload:', err.stack);
       reject(err);
     });
-    uploader.on('progress', function() {
-      console.log('progress', uploader.progressMd5Amount,
-                uploader.progressAmount, uploader.progressTotal);
-    });
+    uploader.on('progress', () => progress(uploader));
     uploader.on('end', function() {
       console.log('done uploading file to s3');
       resolve();
     });
   });
 };
+
+var outputAt = moment();
+function progress(uploader) {
+  var now = moment();
+  var secSinceLastOutput = now.diff(outputAt) / 1000;
+  // console.log('secSinceLastOutput', secSinceLastOutput);
+  if (secSinceLastOutput > 5) {
+    console.log('progress', uploader.progressAmount, uploader.progressTotal);
+    outputAt = now;
+  }
+}
 
 module.exports = S3;
 

@@ -11,8 +11,10 @@
   "dependencies": {
     "bluebird": "^3.2.2",
     "charm": "^1.0.0",
+    "combine-rss": "0.0.3",
     "fluent-ffmpeg": "^2.0.1",
     "moment": "^2.11.2",
+    "parse-rss": "^1.0.3",
     "progress": "^1.1.8",
     "request": "^2.69.0",
     "rss": "^1.2.1",

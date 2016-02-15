@@ -3,13 +3,13 @@ var fs = require('fs');
 var moment = require('moment');
 var pubDate = moment();
 var path = require('path');
-var WORD_EXCLUSIONS = 'by a and an the'.split(' ');
 var Constants = require('./constants');
+var util = require('./util');
 
 module.exports = generateRSS;
 function generateRSS(titleSlug) {
     var localDir = path.join(Constants.DOWNLOADS_DIR, titleSlug);
-    var title = capFirsts(titleSlug.replace(/-/g, ' '));
+    var title = util.titleForSlug(titleSlug);
     var webPath = `martianrover.com/assets/audiobooks/${titleSlug}`;
     var podcastFileName = 'podcast.xml';
 
@@ -18,7 +18,7 @@ function generateRSS(titleSlug) {
         description: 'Audiobook',
         feed_url: `http://${webPath}/${podcastFileName}`,
         site_url: 'http://martianrover.com',
-        image_url: `https://s3.amazonaws.com/${webPath}/cover.jpg`,
+        image_url: `https://${webPath}/cover.jpg`,
         docs: 'http://blogs.law.harvard.edu/tech/rss',
         managingEditor: null,
         webMaster: '',
@@ -38,13 +38,15 @@ function generateRSS(titleSlug) {
 
     files.forEach(function(filePath, i) {
         var fileName = path.basename(filePath);
-        var url = `https://s3.amazonaws.com/${webPath}/${fileName}`;
+        var url = `http://${webPath}/${fileName}`;
+        var fileSize = fs.statSync(filePath).size;
+        var h = i + 1;
 
-        itemDate.subtract(1, 'hour');
+        itemDate.subtract(1, 'second');
 
         feed.item({
-            title:  `Hour ${i+1}`,
-            description: `${i}:00`,
+            title:  `${i}:00 ${util.capFirsts(title)}`,
+            description: `Hour ${h}`,
             url: url,
             guid: null,
             categories: ['Audiobook'],
@@ -52,9 +54,10 @@ function generateRSS(titleSlug) {
             date: itemDate.format(), // any format that js Date can parse.
             lat: null,
             long: null,
+            size:fileSize,
             enclosure: {
                 url:url, 
-                size:fs.statSync(filePath).size, 
+                size:fileSize,
                 type:"audio/mpeg"
             }, 
             custom_elements: null
@@ -76,22 +79,6 @@ function generateRSS(titleSlug) {
     });
 }
 
-
-function capFirsts(str) {
-    var pieces = str.toLowerCase().split(' ');
-    for (var i=0; i < pieces.length; i++) {
-        var word = pieces[i];
-        var letter = word.charAt(0)
-
-        if (i === 0 || WORD_EXCLUSIONS.indexOf(word) === -1) {
-            letter = letter.toUpperCase();
-        }
-
-        pieces[i] = letter + word.substr(1);
-    }
-    return pieces.join(' ');
-}
-
 function listMP3Files(dir) {
     var files = fs.readdirSync(dir);
     return files.map(function (file) {
@@ -101,4 +88,4 @@ function listMP3Files(dir) {
     });
 }
 
-// generateRSS('downloads/hocus-pocus-by-kurt-vonnegut');
+// generateRSS('moby-dick-part-1-of-3-by-herman-melville');
