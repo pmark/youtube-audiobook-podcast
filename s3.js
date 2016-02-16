@@ -1,4 +1,3 @@
-
 var s3 = require('s3');
 var path = require('path');
 var config = require('./s3-config.json');
@@ -8,7 +7,9 @@ var path = require('path');
 var Constants = require('./constants');
 var util = require('./util');
 var moment = require('moment');
+var md5File = require('md5-file');
 var Promise = require('bluebird');
+var rp = require('request-promise');
 
 var client = s3.createClient({
   maxAsyncS3: 20,     // this is the default 
@@ -70,48 +71,68 @@ S3.uploadJSON = function(data, bucketPath) {
 
 S3.uploadFile = function(filePath, bucketPath) {
   return new Promise(function(resolve, reject) {
+    var checksum = md5File(filePath);
     var params = {
       localFile: filePath,
      
       s3Params: {
         Bucket: 'martianrover.com',
         Key: bucketPath,
+        // ContentMD5: checksum,  // leave off for S3 to generate its own
         // other options supported by putObject, except Body and ContentLength. 
         // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property 
       },
     };
 
-    console.log('Uploading', filePath);
-    var uploader = client.uploadFile(params);
-    uploader.on('error', function(err) {
-      console.error('unable to upload:', err.stack);
-      reject(err);
+    function doUpload() {
+      // console.log('Uploading', filePath, 'with params:', params.s3Params);
+      var uploader = client.uploadFile(params);
+      uploader.on('error', function(err) {
+        console.error('unable to upload:', err.stack);
+        reject(err);
+      });
+      uploader.on('progress', () => progress(uploader));
+      uploader.on('end', function() {
+        console.log('done uploading file to s3');
+        resolve();
+      });
+    }
+
+    var fileDestURI = `http://martianrover.com/${bucketPath}`;
+    return rp.head(fileDestURI)
+    .then(function(headers) {      
+      var etag = headers.etag ? headers.etag.replace(/"/g, '') : null;
+      console.log('HEAD', fileDestURI, 'etag:', etag, 'checksum:', checksum);
+
+      if (etag === checksum) {
+        console.log('Already uploaded');
+        resolve();
+      }
+      else {
+        doUpload();
+      }
+    })
+    .catch((err) => {
+      if (err.statusCode !== 404) {
+        console.log('HEAD request error for', fileDestURI, ':\n', err);        
+      }
+      doUpload();
     });
-    uploader.on('progress', () => progress(uploader));
-    uploader.on('end', function() {
-      console.log('done uploading file to s3');
-      resolve();
-    });
+
   });
 };
 
 S3.uploadDir = function(localDir) {
   var slug = path.basename(localDir);
-  var files = util.listFiles(localDir);
+  var files = util.listFiles(localDir).sort();
 
   return Promise.map(files, (filePath) => {
-    if (filePath.indexOf('.mp3') === -1) {
-
     var fileName = path.basename(filePath);
     var bucketPath = `assets/audiobooks/${slug}/${fileName}`;
     return S3.uploadFile(filePath, bucketPath);
-    }
-    else {
-      return false;
-    }
   },
   {
-    concurrency: 1,
+    concurrency: 3,
   })
   .then((allResults) => {
     console.log('Done uploading dir.');
