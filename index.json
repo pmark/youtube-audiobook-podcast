@@ -1,1 +1,30 @@
-{"hocus-pocus-by-kurt-vonnegut":10,"the-martian":11,"doctor-faustus-by-christopher-marlowe-full-audiobook-1616-version-dramatic-play-reading":3,"life-without-principle-by-henry-david-thoreau-full-audiobook-greatest-audio-books":1,"foundation-isaac-asimov-1951-audiobook":9,"cat-s-cradle-1963-by-kurt-vonnegut-full-audiobook-ekertang":6,"2br02b-kurt-vonnegutjr":1,"edgar-allan-poe-the-tell-tale-heartread-by-christopher-lee":1}
+{
+	"hocus-pocus-by-kurt-vonnegut":{
+		"hours": 10,
+		"pubDate": "2016-02-07T00:00:00-08:00"
+	},
+	"the-martian":{
+		"hours": 11,
+		"pubDate": "2016-02-06T00:00:00-08:00"
+	},
+	"life-without-principle-by-henry-david-thoreau-full-audiobook-greatest-audio-books":{
+		"hours": 1,
+		"pubDate": "2016-02-05T00:00:00-08:00"
+	},
+	"foundation-isaac-asimov-1951-audiobook":{
+		"hours": 9,
+		"pubDate": "2016-02-04T00:00:00-08:00"
+	},
+	"cat-s-cradle-1963-by-kurt-vonnegut-full-audiobook-ekertang":{
+		"hours": 6,
+		"pubDate": "2016-02-03T00:00:00-08:00"
+	},
+	"2br02b-kurt-vonnegutjr":{
+		"hours": 1,
+		"pubDate": "2016-02-02T00:00:00-08:00"
+	},
+	"edgar-allan-poe-the-tell-tale-heartread-by-christopher-lee":{
+		"hours": 1,
+		"pubDate": "2016-02-01T00:00:00-08:00"
+	}
+}

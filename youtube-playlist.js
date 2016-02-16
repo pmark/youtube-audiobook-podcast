@@ -46,6 +46,10 @@ function getNextPlaylistVideo() {
     console.log('Existing podcasts:', body, '\n');
     return JSON.parse(body);
   })
+  .catch((err) => {
+    console.log('Error fetching index.json:', err.statusCode);
+    return {};
+  })
   .then((podcasts) => {
     return new Promise(function(resolve, reject) {  
       playlistInfo(config.apiKey, config.playlistID, function(playlistItems) {

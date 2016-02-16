@@ -26,7 +26,7 @@ function chunkify(mp3FilePath) {
 		ffmpeg(mp3FilePath)
 		.ffprobe(function(err, data) {
 			durationSec = data.format.duration;
-			console.log('Total MP3 duration:', durationSec / 60, 'minutes');
+			console.log('Total MP3 duration:', parseInt(durationSec / 60), 'minutes');
 
 			var SecPerChunk = 3600;
 			var chunkCount = Math.ceil(durationSec / SecPerChunk);

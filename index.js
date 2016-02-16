@@ -14,6 +14,7 @@ var generateRSS = require('./generate-rss');
 var generateHTML = require('./generate-html');
 var S3 = require('./s3');
 var fs = require('fs');
+var moment = require('moment');
 var combinePodcasts = require('./combine-podcasts');
 var Constants = require('./constants');
 
@@ -41,15 +42,22 @@ getNextPlaylistVideo()
 })
 .then(chunkify)
 .then((newPodcastSize) => {
+	console.log('newPodcastSize:', newPodcastSize);
 	newPodcast.size = newPodcastSize;
-	return newPodcast.slug;
+	newPodcast.pubDate = nextPubDate();
+	return newPodcast;
 })
 .then(generateRSS)
 .then(S3.uploadDir)
 .then(() => {
 	// update index.json
 	console.log('Updating index.json');
-	publishedPodcasts[newPodcast.slug] = newPodcast.size;
+
+	publishedPodcasts[newPodcast.slug] = {
+		hours: newPodcast.size,
+		pubDate: newItemPubDate,
+	};
+
 	fs.writeFileSync('./index.json', JSON.stringify(publishedPodcasts));
 	return S3.uploadFile('./index.json', Constants.PODCASTS_JSON_PATH);
 })
@@ -73,3 +81,32 @@ getNextPlaylistVideo()
 	console.log(err);
 	return 1;
 });	
+
+
+function nextPubDate() {
+	var keys = null;
+	if (!publishedPodcasts || (keys=Object.keys(publishedPodcasts)).length === 0) {
+		return moment('2016-02-01T00:00:00-08:00').format();
+	}
+
+	var now = moment();
+	var minMinutes = 0;
+	var minKey = null;
+
+	keys.forEach((key) => {
+		var item = publishedPodcasts[key];
+		var pubDate = moment(item.pubDate);
+
+		var minutesSincePubDate = (now.diff(outputAt) / 1000) / 60;
+
+		if (minutesSincePubDate < minMinutes) {
+			minMinutes = minutesSincePubDate;
+			minKey = key;
+		}
+	});
+
+	var item = publishedPodcasts[minKey];
+	var pubDate = moment(item.pubDate);
+	pubDate.add(item.hours, 'minutes');
+	return pubDate.format();
+}

@@ -1,17 +1,20 @@
 var RSS = require('rss');
 var fs = require('fs');
 var moment = require('moment');
-var pubDate = moment();
+var pubDate = null;
 var path = require('path');
 var Constants = require('./constants');
 var util = require('./util');
 
 module.exports = generateRSS;
-function generateRSS(titleSlug) {
+function generateRSS(podcast) {
+    console.log('generateRSS:', podcast);
+    var titleSlug = podcast.slug;
     var localDir = path.join(Constants.DOWNLOADS_DIR, titleSlug);
     var title = util.titleForSlug(titleSlug);
     var webPath = `martianrover.com/assets/audiobooks/${titleSlug}`;
     var podcastFileName = 'podcast.xml';
+    pubDate = moment(podcast.pubDate);
 
     var feed = new RSS({
         title: title,
@@ -34,7 +37,7 @@ function generateRSS(titleSlug) {
     });
 
     var files = listMP3Files(localDir);
-    var itemDate = moment();
+    var itemDate = pubDate.clone().add(files.length, 'minutes');
 
     files.forEach(function(filePath, i) {
         var fileName = path.basename(filePath);
@@ -70,6 +73,7 @@ function generateRSS(titleSlug) {
         var xmlPath = path.join(localDir, podcastFileName);
         fs.writeFile(xmlPath, xml, function(err) {
             if (err) {
+                console.log('can\'t write', xmlPath);
                 reject(err);
             }
             else {
@@ -87,5 +91,3 @@ function listMP3Files(dir) {
         return fs.statSync(file).isFile() && path.extname(file) === '.mp3';
     });
 }
-
-// generateRSS('moby-dick-part-1-of-3-by-herman-melville');
