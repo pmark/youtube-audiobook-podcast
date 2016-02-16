@@ -11,7 +11,7 @@ module.exports = function(podcasts) {
 	
 	Object.keys(podcasts).forEach(function(slug) {
 		var title = util.titleForSlug(slug);
-		var count = podcasts[slug];
+		var count = podcasts[slug].hours;
 		html.push(`<li><a href="${slug}/podcast.xml" class="btn btn-info">${title}</a> \
 			<span class="badge">${count} hour${count === 1 ? '' : 's'}</span></li>`);
 	});

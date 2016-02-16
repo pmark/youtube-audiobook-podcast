@@ -55,7 +55,7 @@ getNextPlaylistVideo()
 
 	publishedPodcasts[newPodcast.slug] = {
 		hours: newPodcast.size,
-		pubDate: newItemPubDate,
+		pubDate: newPodcast.pubDate,
 	};
 
 	fs.writeFileSync('./index.json', JSON.stringify(publishedPodcasts));
@@ -90,14 +90,14 @@ function nextPubDate() {
 	}
 
 	var now = moment();
-	var minMinutes = 0;
+	var minMinutes = Infinity;
 	var minKey = null;
 
 	keys.forEach((key) => {
 		var item = publishedPodcasts[key];
 		var pubDate = moment(item.pubDate);
 
-		var minutesSincePubDate = (now.diff(outputAt) / 1000) / 60;
+		var minutesSincePubDate = (now.diff(pubDate) / 1000) / 60;
 
 		if (minutesSincePubDate < minMinutes) {
 			minMinutes = minutesSincePubDate;
@@ -106,6 +106,7 @@ function nextPubDate() {
 	});
 
 	var item = publishedPodcasts[minKey];
+	console.log('key:', minKey, publishedPodcasts);
 	var pubDate = moment(item.pubDate);
 	pubDate.add(item.hours, 'minutes');
 	return pubDate.format();

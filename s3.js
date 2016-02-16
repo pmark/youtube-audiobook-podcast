@@ -100,15 +100,21 @@ S3.uploadDir = function(localDir) {
   var files = util.listFiles(localDir);
 
   return Promise.map(files, (filePath) => {
+    if (filePath.indexOf('.mp3') === -1) {
+
     var fileName = path.basename(filePath);
     var bucketPath = `assets/audiobooks/${slug}/${fileName}`;
     return S3.uploadFile(filePath, bucketPath);
+    }
+    else {
+      return false;
+    }
   },
   {
     concurrency: 1,
   })
-  .then((err) => {
-    console.log('Done uploading dir.', (err ? err : ''));
+  .then((allResults) => {
+    console.log('Done uploading dir.');
   });
 
 };
