@@ -16,6 +16,11 @@ function streamify(videoId, opt) {
   defaults.set(opt = opt || {});
 
   return new Promise(function(resolve, reject) {
+    if (!videoId) {
+      reject(new Error('No videoId'));
+      return;
+    }
+
     var uri = 'https://www.youtube.com/watch?v=' + videoId;
 
     var videoReadStream = ytdl(uri, {

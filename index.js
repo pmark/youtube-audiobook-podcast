@@ -31,6 +31,11 @@ getNextPlaylistVideo()
 	}
 	else {
 		newPodcast.slug = data.nextUnpublishedVideoSlug;
+
+		if (!newPodcast.slug) {
+			throw new Error('Nothing to do.');
+		}
+
 		return saveVideoToMP3(data.nextUnpublishedVideoId);
 	}
 })
@@ -65,5 +70,6 @@ getNextPlaylistVideo()
 	return S3.uploadFile('./index.xml', Constants.PODCASTS_XML_PATH);
 })
 .catch(function(err) {
-	console.log('Error:', err);
+	console.log(err);
+	return 1;
 });	
