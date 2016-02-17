@@ -70,8 +70,32 @@ S3.uploadJSON = function(data, bucketPath) {
 };
 
 S3.uploadFile = function(filePath, bucketPath) {
+
+  var checksum = md5File(filePath);
+  var fileDestURI = `http://martianrover.com/${bucketPath}`;
+  var skipUpload = false;
+
+  rp.head(fileDestURI)
+  .then(function(headers) {      
+    var etag = headers.etag ? headers.etag.replace(/"/g, '') : null;
+    console.log('HEAD', fileDestURI, 'etag:', etag, 'checksum:', checksum);
+
+    if (etag === checksum) {
+      skipUpload = true;
+      console.log('Already uploaded');
+    }
+  })
+  .catch((err) => {
+    if (err.statusCode !== 404) {
+      console.log('HEAD request error for', fileDestURI, ':\n', err);        
+    }
+  });
+
   return new Promise(function(resolve, reject) {
-    var checksum = md5File(filePath);
+    if (skipUpload) {
+      return resolve();
+    }
+
     var params = {
       localFile: filePath,
      
@@ -84,39 +108,16 @@ S3.uploadFile = function(filePath, bucketPath) {
       },
     };
 
-    function doUpload() {
-      // console.log('Uploading', filePath, 'with params:', params.s3Params);
-      var uploader = client.uploadFile(params);
-      uploader.on('error', function(err) {
-        console.error('unable to upload:', err.stack);
-        reject(err);
-      });
-      uploader.on('progress', () => progress(uploader));
-      uploader.on('end', function() {
-        console.log('done uploading file to s3');
-        resolve();
-      });
-    }
-
-    var fileDestURI = `http://martianrover.com/${bucketPath}`;
-    return rp.head(fileDestURI)
-    .then(function(headers) {      
-      var etag = headers.etag ? headers.etag.replace(/"/g, '') : null;
-      console.log('HEAD', fileDestURI, 'etag:', etag, 'checksum:', checksum);
-
-      if (etag === checksum) {
-        console.log('Already uploaded');
-        resolve();
-      }
-      else {
-        doUpload();
-      }
-    })
-    .catch((err) => {
-      if (err.statusCode !== 404) {
-        console.log('HEAD request error for', fileDestURI, ':\n', err);        
-      }
-      doUpload();
+    console.log('Uploading', filePath); //, 'with params:', params.s3Params);
+    var uploader = client.uploadFile(params);
+    uploader.on('error', function(err) {
+      console.error('unable to upload', params.s3Params.Key, err);
+      reject(err);
+    });
+    uploader.on('progress', () => progress(uploader));
+    uploader.on('end', function() {
+      console.log('done uploading file to s3');
+      resolve();
     });
 
   });
@@ -125,6 +126,7 @@ S3.uploadFile = function(filePath, bucketPath) {
 S3.uploadDir = function(localDir) {
   var slug = path.basename(localDir);
   var files = util.listFiles(localDir).sort();
+  console.log('files:', files);
 
   return Promise.map(files, (filePath) => {
     var fileName = path.basename(filePath);
@@ -132,7 +134,7 @@ S3.uploadDir = function(localDir) {
     return S3.uploadFile(filePath, bucketPath);
   },
   {
-    concurrency: 3,
+    concurrency: 1,
   })
   .then((allResults) => {
     console.log('Done uploading dir.');

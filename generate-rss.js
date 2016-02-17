@@ -21,7 +21,7 @@ function generateRSS(podcast) {
         description: 'Audiobook',
         feed_url: `http://${webPath}/${podcastFileName}`,
         site_url: 'http://martianrover.com',
-        image_url: `https://${webPath}/cover.jpg`,
+        image_url: `http://${webPath}/cover.jpg`,
         docs: 'http://blogs.law.harvard.edu/tech/rss',
         managingEditor: null,
         webMaster: '',

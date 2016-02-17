@@ -1,4 +1,4 @@
-var combiner = require('combine-rss').combiner()
+var combiner = require('./combine-rss/index.js').combiner()
 var fs = require('fs');
 
 module.exports = function(podcasts) {
