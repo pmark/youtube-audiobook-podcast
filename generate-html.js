@@ -3,8 +3,12 @@ var util = require('./util');
 
 module.exports = function(podcasts) {
 	var html = [
+		'<!DOCTYPE html>',
+		'<head>',
+		'<meta name="viewport" content="width=device-width, initial-scale=1.0"/>'
 		'<link rel="stylesheet" type="text/css" href="http://martianrover.com/assets/audiobooks/bootstrap.simplex.min.css">',
 		'<style> li { margin:4px 0; } </style>',
+		'</head>',
 		'<div class="alert alert-dismissible alert-info"><h1>Audiobook Podcasts</h1>Each recording is split into hour long segments.</div>',
 		'<ul><li><a href="index.xml" class="btn btn-primary">Subscribe to All</a> <a href="index.xml" style="border:none"><img src="http://martianrover.com/assets/audiobooks/subscribe.png" style="height:22px"/></a></li>',
 	];
