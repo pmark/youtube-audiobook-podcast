@@ -25,13 +25,20 @@ module.exports = function(podcasts) {
 	    height: auto;
 	    background: none;
 	}
-	.badge {
-		margin-left: 0px;
-		font-size:6px;
+	.list-group-item {
+		background-color: rgba(255,255,255,0.66);
+		border-radius: 4px;
 	}
-	.label {
-		font-size:8px;
+	.list-group-item a {
+		display: block;
+		color: #3a87ad;
+		font-size: 12pt;
 	}
+	.list-group-item a:hover {
+		text-decoration: none;
+		color: #204b60;
+	}
+
 	</style>
 </head>
 
@@ -40,19 +47,18 @@ module.exports = function(podcasts) {
 	<h1>Audiobook Podcasts</h1>
 	<p>Each recording is split into hour long segments.</p>
 </div>
-<ul class="list-unstyled">
+<ul class="list-group">
 	<li>
 		<a href="index.xml" class="label label-primary">Subscribe to all</a>
 		<a href="index.xml" style="border:none"><img src="http://martianrover.com/assets/audiobooks/subscribe.png" style="height:14px"/></a>
 	</li>
-		`
+`
 	];
 	
 	Object.keys(podcasts).forEach(function(slug) {
 		var title = util.titleForSlug(slug);
 		var count = podcasts[slug].hours;
-		html.push(`<li><a href="${slug}/podcast.xml" class="label label-info">${title}</a> \
-			<span class="badge">${count}</span></li>`);
+		html.push(`<li class="list-group-item"><span class="badge">${count}</span><a href="${slug}/podcast.xml">${title}</a></li>`);
 	});
 
 	html.push(
@@ -66,3 +72,4 @@ module.exports = function(podcasts) {
 };
 
 module.exports(require('./index.json'));
+
