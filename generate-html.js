@@ -55,10 +55,10 @@ module.exports = function(podcasts) {
 `
 	];
 	
-	Object.keys(podcasts).forEach(function(slug) {
+	Object.keys(podcasts).sort().forEach(function(slug) {
 		var title = util.titleForSlug(slug);
 		var count = podcasts[slug].hours;
-		html.push(`<li class="list-group-item"><span class="badge">${count}</span><a href="${slug}/podcast.xml">${title}</a></li>`);
+		html.push(`<li class="list-group-item"><span class="badge"><a href="${slug}/audio.html" style="display:block; color:white; padding:4px;">${count}</a></span><a href="${slug}/podcast.xml">${title}</a></li>\n`);
 	});
 
 	html.push(
@@ -71,5 +71,6 @@ module.exports = function(podcasts) {
 	fs.writeFileSync('./index.html', html.join(''));
 };
 
-module.exports(require('./index.json'));
+// TODO: why was this uncommented ever?
+//module.exports(require('./index.json'));
 

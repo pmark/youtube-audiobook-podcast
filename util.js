@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 
 module.exports.slugForTitle = function(title) {
-	return title.trim().replace(/\W/g, '-').replace(/^-|--{1}|-$/g, '').toLowerCase();
+	return title.trim().replace(/\W/g, '-').replace(/^-|-$/g, '').replace(/-+/g, '-').toLowerCase();
 };
 
 module.exports.titleForSlug = function(slug) {

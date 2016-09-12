@@ -12,6 +12,7 @@ var saveVideoToMP3 = require('./youtube-audio-stream');
 var chunkify = require('./chunkify');
 var generateRSS = require('./generate-rss');
 var generateHTML = require('./generate-html');
+// var generateAudioHTML = require('./generate-audio-html');
 var S3 = require('./s3');
 var fs = require('fs');
 var moment = require('moment');
@@ -77,6 +78,16 @@ getNextPlaylistVideo()
 .then(() => {
 	return S3.uploadFile('./index.xml', Constants.PODCASTS_XML_PATH);
 })
+/*
+.then(() => {
+	// update slug/audio.html
+	console.log('Updating audio.html for', slug);
+	return updateAudioIndexes(publishedPodcasts);
+})
+.then(() => {
+	return S3.uploadFile('./index.xml', Constants.PODCASTS_XML_PATH);
+})
+*/
 .catch(function(err) {
 	console.log(err);
 	return 1;
@@ -110,4 +121,32 @@ function nextPubDate() {
 	var pubDate = moment(item.pubDate);
 	pubDate.add(item.hours, 'minutes');
 	return pubDate.format();
+}
+
+function updateAudioIndexes(podcasts) {
+	Object.keys(podcasts).forEach(function(slug) {
+		
+		var onePodcast = podcasts[slug];
+		var outputDir = slug;
+
+		for (var chunkNum=0; chunkNum < onePodcast.hours; chunkNum++) {
+			var chunkName = (path.join(outputDir, 'hour' + 
+				(chunkNum < 9 ? '0' : '') +
+				(chunkNum+1) + '.mp3'));
+
+			return new Promise(function(resolve, reject) {
+				if (fs.existsSync(chunkName)) {
+					// console.log('Chunk exists:', chunkName);
+					resolve();
+					return;
+				}
+				else {
+					fs.writeFileSync(`./${slug}/index.json`, JSON.stringify(publishedPodcasts));
+				}
+			});
+
+		}
+
+		// generateAudioHTML(slug, )
+	});
 }
