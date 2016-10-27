@@ -66,6 +66,9 @@ function getNextPlaylistVideo() {
           if (!publishedItem) {
             unpublished[playlistItemSlug] = item.resourceId.videoId;
           }
+          else {
+            podcasts[playlistItemSlug].videoId = item.resourceId.videoId;
+          }
         });
 
         var unpublishedSlugs = Object.keys(unpublished || {});

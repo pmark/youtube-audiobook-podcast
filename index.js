@@ -21,25 +21,31 @@ var Constants = require('./constants');
 
 var publishedPodcasts = null;
 var newPodcast = {};
-var mp3FilePath = process.argv[2];
+var slugToFetch = process.argv[2];
 
 getNextPlaylistVideo()
 .then((data) => {
 	publishedPodcasts = data.publishedPodcasts;
 
-	if (mp3FilePath) {
-		newPodcast.slug = path.basename(mp3FilePath, '.mp3');
-		return mp3FilePath;
+	if (slugToFetch) {
+		console.log('Processing', slugToFetch);
+		newPodcast.slug = slugToFetch;
+		newPodcast.videoId = publishedPodcasts[slugToFetch].videoId;
+
+		if (fs.existsSync(`${slugToFetch}.mp3`)) {
+			return slugToFetch;			
+		}
 	}
 	else {
 		newPodcast.slug = data.nextUnpublishedVideoSlug;
-
-		if (!newPodcast.slug) {
-			throw new Error('Nothing to do.');
-		}
-
-		return saveVideoToMP3(data.nextUnpublishedVideoId);
+		newPodcast.videoId = data.nextUnpublishedVideoId;
 	}
+
+	if (!newPodcast.slug) {
+		throw new Error('Nothing to do.');
+	}
+
+	return saveVideoToMP3(newPodcast.videoId);
 })
 .then(chunkify)
 .then((newPodcastSize) => {
