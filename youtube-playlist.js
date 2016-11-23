@@ -43,7 +43,7 @@ function getNextPlaylistVideo() {
   console.log('Getting published podcasts...');
   return rp(`http://martianrover.com/${Constants.PODCASTS_JSON_PATH}`)
   .then((body) => {
-    console.log('Existing podcasts:', body, '\n');
+    // console.log('Existing podcasts:', body, '\n');
     return JSON.parse(body);
   })
   .catch((err) => {

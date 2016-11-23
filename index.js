@@ -28,12 +28,14 @@ getNextPlaylistVideo()
 	publishedPodcasts = data.publishedPodcasts;
 
 	if (slugToFetch) {
-		console.log('Processing', slugToFetch);
-		newPodcast.slug = slugToFetch;
-		newPodcast.videoId = publishedPodcasts[slugToFetch].videoId;
+		var filePath = `downloads/${slugToFetch}.mp3`;
+		console.log('Processing file', filePath);
 
-		if (fs.existsSync(`${slugToFetch}.mp3`)) {
-			return slugToFetch;			
+		newPodcast.slug = slugToFetch;
+		newPodcast.videoId = publishedPodcasts[slugToFetch] && publishedPodcasts[slugToFetch].videoId;
+
+		if (fs.existsSync(filePath)) {
+			return filePath;
 		}
 	}
 	else {
