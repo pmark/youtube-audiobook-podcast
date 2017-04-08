@@ -47,6 +47,7 @@ getNextPlaylistVideo()
 		throw new Error('Nothing to do.');
 	}
 
+	console.log('New podcast:', newPodcast)
 	return saveVideoToMP3(newPodcast.videoId);
 })
 .then(chunkify)
@@ -97,7 +98,7 @@ getNextPlaylistVideo()
 })
 */
 .catch(function(err) {
-	console.log(err);
+	console.log('Error:', err);
 	return 1;
 });	
 

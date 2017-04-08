@@ -23,13 +23,15 @@ function streamify(videoId, opt) {
 
     var uri = 'https://www.youtube.com/watch?v=' + videoId;
 
+    console.log('Fetching', uri)
+
     var videoReadStream = ytdl(uri, {
       filter: filterVideo,
       quality: opt.quality
     });
 
     videoReadStream.on('info', function(info, format) {
-      // console.log('info event:', info);
+      console.log('info event:', info);
 
       if (!fs.existsSync(Constants.DOWNLOADS_DIR)) { fs.mkdirSync(Constants.DOWNLOADS_DIR); }
 
@@ -48,7 +50,7 @@ function streamify(videoId, opt) {
       if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
       var imgPath = path.join(imgDir, 'cover.jpg');
 
-      fetchThumbnail(info.iurlhq, imgPath)
+      fetchThumbnail(extractThumbnailURL(info.videoDetails), imgPath)
       .then(function() {
         return fetchVideoSize(format.url);
       })
@@ -82,6 +84,11 @@ function streamify(videoId, opt) {
 
     });
 
+    videoReadStream.on('error', function(err) {
+      console.log('ytdl error:', err);
+    });
+
+
     function filterVideo(format) {
       return format.container === (opt.videoFormat);
     }
@@ -110,5 +117,17 @@ function fetchThumbnail(url, imgPath) {
     return null;
   });
 }
+
+function extractThumbnailURL(videoDetails) {
+  var thumbnails = videoDetails && videoDetails.thumbnail && videoDetails.thumbnail.thumbnails;
+  if (thumbnails) {
+    var last = thumbnails[thumbnails.length-1];
+    if (last) {
+      return last.url;
+    }
+  }
+  return null;
+}
+
 
 // streamify('V44YvBUHkt4');
