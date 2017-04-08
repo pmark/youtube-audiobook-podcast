@@ -27,8 +27,10 @@ function chunkify(mp3FilePath) {
 		.ffprobe(function(err, data) {
 			if (err) {
 				console.error('Error running ffprobe:', err);
+				return reject(err);
 			}
-		
+
+	// console.log('data', data)		
 			durationSec = data.format.duration;
 			console.log('Total MP3 duration:', parseInt(durationSec / 60), 'minutes');
 

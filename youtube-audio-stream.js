@@ -50,7 +50,7 @@ function streamify(videoId, opt) {
       if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
       var imgPath = path.join(imgDir, 'cover.jpg');
 
-      fetchThumbnail(extractThumbnailURL(info.videoDetails), imgPath)
+      fetchThumbnail(extractThumbnailURL(info), imgPath)
       .then(function() {
         return fetchVideoSize(format.url);
       })
@@ -118,8 +118,10 @@ function fetchThumbnail(url, imgPath) {
   });
 }
 
-function extractThumbnailURL(videoDetails) {
-  var thumbnails = videoDetails && videoDetails.thumbnail && videoDetails.thumbnail.thumbnails;
+function extractThumbnailURL(info) {
+  var playerResponse = JSON.parse(info.player_response);
+  var thumbnails = playerResponse && playerResponse.videoDetails && playerResponse.videoDetails.thumbnail && playerResponse.videoDetails.thumbnail.thumbnails;
+
   if (thumbnails) {
     var last = thumbnails[thumbnails.length-1];
     if (last) {
